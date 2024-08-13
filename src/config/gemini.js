@@ -1,12 +1,3 @@
-/*
- * Install the Generative AI SDK
- *
- * $ npm install @google/generative-ai
- *
- * See the getting started guide for more information
- * https://ai.google.dev/gemini-api/docs/get-started/node
- */
-
 import {
   GoogleGenerativeAI,
   HarmCategory,
@@ -28,16 +19,44 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
+let conversationHistory = [
+  {
+    role: "user",
+    parts: [
+      {text: "hesi"},
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {text: "Hesi!  (Or, hello!) 😊  Ndokubatsira nei nhasi? \n"},
+    ],
+  },
+];
+
 async function runChat(prompt) {
   const chatSession = model.startChat({
     generationConfig,
-    // safetySettings: Adjust safety settings
-    // See https://ai.google.dev/gemini-api/docs/safety-settings
-    history: [],
+    history: conversationHistory,
   });
 
   const result = await chatSession.sendMessage(prompt);
   console.log(result.response.text());
+
+  // Update the conversation history
+  conversationHistory.push({
+    role: "user",
+    parts: [
+      { text: prompt },
+    ],
+  });
+  conversationHistory.push({
+    role: "model",
+    parts: [
+      { text: result.response.text() },
+    ],
+  });
+
   return result.response.text();
 }
 

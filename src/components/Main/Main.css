@@ -161,7 +161,26 @@
     font-weight: 300;
     line-height: 1.8;
 }
+.result-data img{
+    width: 60px;
+    border-radius: 50%;
+}
 
+/* Add styles for the logout button */
+  .main .nav .logout {
+    margin-left: 10px; 
+    background-color: #fff; /* Adjust color as needed */
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .main .nav .logout:hover {
+    background-color: #45dc0e; 
+  }
 @media (max-width:600px){
     .main-bottom input{
         flex: none;
@@ -182,5 +201,13 @@
         color: #c4c7c5;
         font-weight: 500;
         padding: 20px;
+    }
+    .main .nav img{
+        width: 20px;
+        border-radius: 50%;
+    }
+    .result img{
+        width: 20px;
+        border-radius: 50%;
     }
 }
