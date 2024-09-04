@@ -45,56 +45,51 @@ const ContextProvider = (props) => {
       response = await runChat(input)
     }
 
-    // Handle bold text
-    let responseArray = response.split("**");
-    let newResponse = "";
-    for (let i = 0; i < responseArray.length; i++) {
-      if (i === 0 || i % 2 !== 1) {
-        newResponse += responseArray[i];
-      } else {
-        newResponse += "<b>" + responseArray[i] + "</b>";
-      }
+   // Handle bold text
+  let responseArray = response.split("**");
+  let newResponse = "";
+  for (let i = 0; i < responseArray.length; i++) {
+    if (i === 0 || i % 2 !== 1) {
+      newResponse += responseArray[i];
+    } else {
+      newResponse += "<b>" + responseArray[i] + "</b>";
     }
-
-    // Handle code blocks
-    let newResponse2 = newResponse.split("`");
-    let finalResponse = "";
-    for (let i = 0; i < newResponse2.length; i++) {
-      if (i % 2 === 0) {
-        finalResponse += newResponse2[i];
-      } else {
-        finalResponse += `
-          <code 
-            style="
-              width: 100%; 
-              min-height: 400px; 
-              font-family: 'Outfit', monospace; 
-              background-color: #f0f4f9; 
-              border-radius: 8px; 
-              border: 1px solid #ccc; 
-              padding: 10px; 
-              overflow-y: auto; 
-              resize: auto;
-              scrollbar-width: thin;
-              scrollbar-color: #888 #f0f4f9;">
-            ${newResponse2[i]}
-          </code>`;
-      }
-    }
-
-
-    // Handle line breaks
-    finalResponse = finalResponse.split("*").join("</br>")
-    
-    let newResponseArray = finalResponse.split(" ");
-    for (let i = 0; i < newResponseArray.length; i++) {
-      const nextWord = newResponseArray[i]
-      delayPara(i, nextWord + " ")
-    }
-
-    setLoading(false)
-    setInput("")
   }
+
+// Handle code blocks and Markdown headers
+let newResponse2 = newResponse.split("`");
+let finalResponse = "";
+for (let i = 0; i < newResponse2.length; i++) {
+  if (i % 2 === 0) {
+    let headerMatches = newResponse2[i].match(/^#+\s*(.*)$/);
+    if (headerMatches) {
+      let headerLevel = headerMatches[1].length;
+      let headerText = headerMatches[2];
+      finalResponse += `<h${headerLevel}>${headerText}</h${headerLevel}>`;
+    } else {
+      finalResponse += newResponse2[i];
+    }
+  } else {
+    let codeLines = newResponse2[i].split("\n");
+    finalResponse += "<code style='display: block; width: 100%; font-family: \"Outfit\", monospace; background-color: #f0f4f9; border-radius: 8px; border: 1px solid #ccc; padding: 10px; overflow-y: auto; resize: vertical; scrollbar-width: thin; scrollbar-color: #888 #f0f4f9; max-height: 400px;'>";
+    for (let j = 0; j < codeLines.length; j++) {
+      finalResponse += codeLines[j] + "<br>";
+    }
+    finalResponse += "</code>";
+  }
+}
+  // Handle line breaks
+  finalResponse = finalResponse.split("*").join("</br>")
+  
+  let newResponseArray = finalResponse.split(" ");
+  for (let i = 0; i < newResponseArray.length; i++) {
+    const nextWord = newResponseArray[i]
+    delayPara(i, nextWord + " ")
+  }
+
+  setLoading(false)
+  setInput("")
+}
 
   const contextValue = {
     prevPrompts,
@@ -119,3 +114,4 @@ const ContextProvider = (props) => {
 }
 
 export default ContextProvider;
+

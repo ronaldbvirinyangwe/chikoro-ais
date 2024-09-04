@@ -90,11 +90,17 @@
     width: 24px;
     cursor: pointer;
 }
-.search-box input{
+.search-box textarea{
     flex: 1;
     background: transparent;
     border: none;
     outline: none;
+padding:10px;
+font-size: 18px;
+    height: 40px;
+    overflow: hidden;
+    resize: auto;
+    line-height: 24px;
     padding: 8px;
     font-size: 18px;
 }
@@ -182,7 +188,7 @@
     background-color: #45dc0e; 
   }
 @media (max-width:600px){
-    .main-bottom input{
+    .main-bottom textarea{
         flex: none;
         width: 150px;
     }

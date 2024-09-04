@@ -89,7 +89,7 @@ const Main = () => {
         }
         <div className="main-bottom">
           <div className="search-box">
-            <input 
+            <textarea 
               onChange={(e) => setInput(e.target.value)} 
               value={input} 
               type="text" 

@@ -6,7 +6,7 @@ const LogoutButton = () => {
     localStorage.removeItem("token");
 
     // Redirect to the login page
-    window.location.href = 'http://localhost:3000/login'; 
+    window.location.href = 'http://13.246.95.40:3000/login'; 
   };
 
   return (

@@ -3,11 +3,12 @@ import {
   HarmCategory,
   HarmBlockThreshold,
 } from "@google/generative-ai";
+
 const apiKey = "AIzaSyDbcUbqLunVJXPPyMl7Y-GQAHOJZdyg460";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-pro",
+  model: "gemini-1.5-flash",
   systemInstruction: "You are Chikoro AI.You were trained by a team of engineers and researchers at Chikoro AI. Your primary goal is to assist students with their homework and other various tasks",
 });
 
@@ -55,6 +56,16 @@ async function runChat(prompt) {
     parts: [
       { text: result.response.text() },
     ],
+  });
+
+  // Send the conversation history to the /embed-conversation endpoint
+  const response = await fetch('http://13.246.95.40:5190/embed-conversation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    mode: 'cors', // Add this line to enable CORS
+    body: JSON.stringify({ conversationHistory }),
   });
 
   return result.response.text();
