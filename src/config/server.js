@@ -47,7 +47,7 @@ app.post('/generate-response', async (req, res) => {
   }
 });
 
-app.post('/embed-conversation', async (req, res) => {
+app.get('/embed-conversation', async (req, res) => {
   try {
     const conversationHistory = req.body.conversationHistory;
     const model = genAI.getGenerativeModel({ model: "text-embedding-004"});

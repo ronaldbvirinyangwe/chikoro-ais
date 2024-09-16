@@ -4,10 +4,10 @@ const LogoutButton = () => {
   const handleLogout = () => {
     // Remove the token from local storage
     localStorage.removeItem("token");
-
     // Redirect to the login page
-    window.location.href = 'http://13.246.95.40:3000/login'; 
+    navigate("/login");
   };
+
 
   return (
     <button className='logout'onClick={handleLogout}>
