@@ -1,57 +1,138 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import "./PaymentPage.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // Assuming you have an AuthContext
+import './PaymentPage.css';
 
 const PaymentPage = () => {
+  const [instructions, setInstructions] = useState('');
+  const [pollUrl, setPollUrl] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const { token } = useAuth();
+
+  const queryParams = new URLSearchParams(location.search);
+  const returnUrl = 'https://chikoro-ai.com'; // Set your redirect URL here
 
   const handleLogout = () => {
-    // Remove the token from local storage
-    localStorage.removeItem("token");
-    // Redirect to the login page
-    navigate("/login");
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
-const startPayment = () => {
-    // Save a flag to indicate that payment is in progress
-    localStorage.setItem('paymentInProgress', 'true');
-    window.location.href = "https://www.paynow.co.zw/Payment/BillPaymentLink/?q=aWQ9MTkyMzUmYW1vdW50PTIuMDAmYW1vdW50X3F1YW50aXR5PTAuMDAmbD0x"
+  const validatePhoneNumber = (number) => {
+    // Basic Zimbabwe phone number validation
+    const phoneRegex = /^(07[7-8])[0-9]{7}$/;
+    return phoneRegex.test(number);
   };
 
-  const handlePaymentSuccess = () => {
-    // Check if there's a return URL stored
-    const returnUrl = localStorage.getItem('returnUrl') || '/';
-    // Clear the return URL from localStorage
-    localStorage.removeItem('returnUrl');
-    // Redirect to the returnUrl after payment
-    navigate(returnUrl);
+  const handlePayment = async () => {
+    setLoading(true);
+    setError('');
+    console.log('Token being sent:', token);
+
+    try {
+      // Send the payment request to your backend
+      const response = await axios.post('/bhadhara', {
+        phoneNumber: phoneNumber,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data && response.data.instructions) {
+        setInstructions(response.data.instructions);
+        setPollUrl(response.data.pollUrl);
+        setPaymentStatus('initiated');
+      } else if (response.data && response.data.error) {
+        setError(response.data.error);
+      } else {
+        setError('Unknown error occurred');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      setError(err.response?.data?.error || 'An error occurred while processing');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const pollPaymentStatus = async () => {
+    try {
+      const response = await axios.post('/check-payment-status', {
+        pollUrl: pollUrl,
+      });
+
+      if (response.data.success) {
+        setPaymentStatus('paid');
+        navigate('../'); // Frontend redirection
+      } else {
+        setPaymentStatus('failed');
+      }
+    } catch (error) {
+      console.error('Error polling payment status:', error);
+      setError('Error checking payment status');
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (pollUrl && paymentStatus !== 'paid') {
+        pollPaymentStatus(); // Poll the payment status only if it's not paid yet
+      }
+    }, 5000);
+
+    return () => clearInterval(interval); // Clean up interval on component unmount
+  }, [pollUrl, paymentStatus]); // Re-run if pollUrl or paymentStatus changes
 
   return (
     <div className="content">
       <button className="logout-btn" onClick={handleLogout}>
         Logout
       </button>
-
       <div className="container">
-        <div className="payment">
-          <h2>
-            USD $2/month
-            <br />
-          </h2>
-          <span>&#10004;</span>
-          <p>Early access to new features</p>
-          <br />
-          <span>&#10004;</span>
-          <p>Access to Chikoro AI gen</p>
-          <br />
-          <span>&#10004;</span>
-          <p>Assistance with homework, writing, problem solving, and more</p>
-       <button className="submit-btn" onClick={startPayment}>
-            Subscribe
-          </button>
-	 </div>
+        {paymentStatus === 'initiated' ? (
+          <div>
+            <h2>Payment Instructions</h2>
+            <p>{instructions}</p>
+            <p>Please complete the payment on your mobile device.</p>
+            <p>Status: Waiting for payment confirmation...</p>
+          </div>
+        ) : (
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handlePayment();
+          }}>
+            <div className="payment">
+              <h2>USD $2/month</h2> <span>✔</span>
+              <p>Early access to new features</p>
+              <span>✔</span>
+              <p>Access to Chikoro AI gen</p>
+              <span>✔</span>
+              <p>Assistance with homework, writing, problem solving and more</p>
+            </div>
+
+            <label>
+              Phone Number:
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="e.g., 0771234567"
+                required
+              />
+            </label> 
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? 'Processing...' : 'Subscribe'}
+            </button>
+          </form>
+        )}
+
+        {error && <p className="error-message">Error: {error}</p>}
       </div>
     </div>
   );

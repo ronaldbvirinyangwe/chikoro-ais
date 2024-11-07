@@ -19,7 +19,6 @@ const App = () => {
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<><Sidebar /><Main /></>} />
             <Route path="/payment" element={<PaymentPage />} />
-	   <Route path="/payment-success" element={<PaymentSuccessPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

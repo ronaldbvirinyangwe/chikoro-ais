@@ -5,6 +5,8 @@
     justify-content: space-between;
     background-color: #f0f4f9;
     padding: 25px 15px;
+    transition:all 0.3s ease;
+    overflow: hidden;
 }
 .Sidebar img{
     width: 20px;
@@ -55,4 +57,11 @@
 .Sidebar .bottom-item{
     padding-right: 10px;
     cursor: pointer;
+}
+@media (max-width:600px){
+.Sidebar{
+padding: 20px 10px;
+}
+
+
 }

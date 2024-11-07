@@ -8,30 +8,48 @@
   transition: all .2s linear;
 }
 
-.content .container{
-   min-height: 60vh;
+.container{
   display: flex;
- justify-content: center;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   padding:25px;
- 
-} 
-.container .submit-btn {
+  min-height: 70vh;
+}
+.container form  button {
   color: #fff;
   display: block; 
   text-decoration: none; 
   text-align: center;
+  width: 100%;
   font-size: 17px;
-  width:300px; 
+  height: 100%; 
   padding: 12px; 
   background-color: #27ae60; 
   border: none;
   cursor: pointer;
- transition: background-color 0.3s ease; 
 }
 
-.container .submit-btn:hover {
+.container form a:hover {
   background-color: #2ecc71; 
+}
+.container form input {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  box-sizing: border-box;
+  border: 2px solid #000; 
+  border-radius: 4px;
+  background-color: #fff; 
+  color: #000; 
+  font-size: 16px;
+}
+
+.container form label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 16px;
+  color: #000; 
 }
 .content .logout-btn{
   margin-left: 900px; 
@@ -46,6 +64,7 @@
 .content .logout-btn:hover{
   background: #2ecc71;
 }
+
 .content .open-main{
     background-color: #fff; 
     border: none; 

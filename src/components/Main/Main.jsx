@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState,useRef } from 'react';
 import './Main.css';
 import { assets } from '../../assets/assets';
 import { Context } from '../../context/Context';
@@ -11,6 +11,9 @@ const Main = () => {
   // State to store user profile information
   const [profilePic, setProfilePic] = useState(''); // URL to profile picture
   const [userName, setUserName] = useState(''); // User name
+  
+  //Ref for the textarea
+  const textareaRef = useRef(null)
 
   useEffect(() => {
     // Fetch user profile data when the component mounts
@@ -31,18 +34,25 @@ const Main = () => {
     "Ndibatsire kuita homework",
     "Ndibatsirewo nekuverenga",
     "Ndiudze nyaya inonakidza",
-    "Ndinonyora sei rondedzero yetsumo",
+    "Ndinonyora sei rondedzero",
   ];
 
   const handleCardClick = (message) => {
     setInput(message);
-    onSent();
+    ;
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && input) {
       onSent();
     }
+  };
+
+const handleInput = (event) => {
+    setInput(event.target.value);
+    // Adjust the height of the textarea
+    textareaRef.current.style.height = 'auto'; // Reset height
+    textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 400)}px`;
   };
 
   return (
@@ -89,12 +99,13 @@ const Main = () => {
         }
         <div className="main-bottom">
           <div className="search-box">
-            <textarea 
-              onChange={(e) => setInput(e.target.value)} 
+            <textarea
+	      ref={textareaRef} 
+              onInput={handleInput} 
               value={input} 
               type="text" 
-              placeholder='Nyora muvhunzo wako pano' 
-              onKeyDown={handleKeyDown} // Add this line
+              placeholder='Nyora muvhunzo pano' 
+              onKeyDown={handleKeyDown} 
             />
             <div>
               <img src={assets.gallery_icon} alt="" />
@@ -102,7 +113,7 @@ const Main = () => {
               {input ? <img onClick={() => onSent()} src={assets.send_icon} alt="" /> : null}
             </div>
           </div>
-          <p className="bottom-info">Chikoro AI inogona kuratidza ruzivo rusina chokwadi, kusanganisira nezvevanhu, saka tarisa kaviri mhinduro dzayo</p>
+          <p className="bottom-info">Chikoro AI inogona kukanganisa, saka tarisa kaviri mhinduro dzayo kaviri</p>
         </div>
       </div>
     </div>

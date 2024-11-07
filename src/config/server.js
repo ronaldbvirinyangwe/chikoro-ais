@@ -1,80 +1,56 @@
 import express from 'express';
+import { MongoClient } from 'mongodb';
 import cors from 'cors';
-import { MongoClient, ServerApiVersion } from 'mongodb';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const app = express();
-const corsOptions = {
-  origin: 'http://13.246.95.40:5173',
-  methods: ['POST'],
-  allowedHeaders: ['Content-Type'],
-};
+const port = 3000;
 
-app.use(cors(corsOptions)); // Enable CORS with the specified options
-app.use(express.json());
+// MongoDB connection URI
+const uri = "mongodb+srv://ronaldbvirinyangwe:Ia4zlauEbL6S5uYh@authentication.mzuydgr.mongodb.net/?retryWrites=true&w=majority&appName=authentication";
+const client = new MongoClient(uri);
 
-const uri = "mongodb+srv://ronaldbvirinyangwe:Ia4zlauEbL6S5uYh@authentication.mzuydgr.mongodb.net/mydatabase?retryWrites=true&w=majority&appName=authentication";
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true
-  }
-});
+app.use(cors()); // Enable CORS
+app.use(express.json()); // Parse JSON bodies
 
-const apiKey = "AIzaSyDbcUbqLunVJXPPyMl7Y-GQAHOJZdyg460";
-const genAI = new GoogleGenerativeAI(apiKey);
+app.post('/search', async (req, res) => {
+  const { query } = req.body;
 
-async function connectToMongoDB() {
   try {
     await client.connect();
-    console.log('Connected to MongoDB');
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-  }
-}
+    const database = client.db("history"); // Replace with your database name
+    const collection = database.collection("history");
 
-connectToMongoDB();
-
-app.post('/generate-response', async (req, res) => {
-  try {
-    const prompt = req.body.prompt;
-    const response = await runChat(prompt); // Import and call the runChat function from gemini.js
-    res.json({ message: response });
-  } catch (error) {
-    console.error('Error generating response:', error);
-    res.status(500).json({ message: 'Error generating response' });
-  }
-});
-
-app.get('/embed-conversation', async (req, res) => {
-  try {
-    const conversationHistory = req.body.conversationHistory;
-    const model = genAI.getGenerativeModel({ model: "text-embedding-004"});
-    const conversationEmbeddings = [];
-
-    for (const message of conversationHistory) {
-      for (const part of message.parts) {
-        const text = part.text;
-        const result = await model.embedContent(text);
-        const embedding = result.embedding;
-        conversationEmbeddings.push({
-          text: text,
-          embedding: embedding.values
-        });
-      }
+    // Check if the results are already in the database
+    const existingResult = await collection.findOne({ query });
+    if (existingResult) {
+      console.log("Returning cached results from MongoDB.");
+      return res.json({ results: existingResult.results });
     }
 
-    const db = client.db("mydatabase");
-    const collection = db.collection("vectordb");
-    await collection.insertMany(conversationEmbeddings);
-    res.json({ message: 'Conversation history embedded successfully' });
+    // Fetch results from Google Custom Search API
+    const customSearchApiKey = "AIzaSyCnvM9marRKHXOh7TJBCXRuSypwJWq4wpM";
+    const cx = "122c61a18e46b44f5";
+    const url = `https://www.googleapis.com/customsearch/v1?key=${customSearchApiKey}&cx=${cx}&q=${query}`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    const results = data.items || [];
+
+    // Save results to MongoDB
+    await collection.insertOne({ query, results });
+
+    res.json({ results });
   } catch (error) {
-    console.error('Error embedding conversation:', error);
-    res.status(500).json({ message: 'Error embedding conversation' });
+    console.error("Error fetching search results:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  } finally {
+    await client.close(); // Ensure the client is closed after the operation
   }
 });
 
-app.listen(5190, () => {
-  console.log('Server started on port 5190');
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
