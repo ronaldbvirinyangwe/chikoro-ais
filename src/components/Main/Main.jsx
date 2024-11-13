@@ -34,7 +34,6 @@ const Main = () => {
     "Ndibatsire kuita homework",
     "Ndibatsirewo nekuverenga",
     "Ndiudze nyaya inonakidza",
-    "Ndinonyora sei rondedzero",
   ];
 
   const handleCardClick = (message) => {
@@ -55,13 +54,17 @@ const handleInput = (event) => {
     textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 400)}px`;
   };
 
+ const handleLogout = () => {
+    navigate('/login');
+  };
+
   return (
     <div className='main'>
       <div className="nav">
         <p>Chikoro AI</p>
         {/* Display user profile picture */}
         <img src={profilePic || "src/assets/profile.png"} alt="Profile" />
-        <LogoutButton className="logout-button" />
+        <LogoutButton className="logout-button"onClick={handleLogout} />
       </div>
       <div className="main-container">
         {!showResult
@@ -74,7 +77,7 @@ const handleInput = (event) => {
               {cardMessages.map((message, index) => (
                 <div key={index} className="card" onClick={() => handleCardClick(message)}>
                   <p>{message}</p>
-                  <img src={assets[`${index === 0 ? 'compass_icon' : index === 1 ? 'bulb_icon' : index === 2 ? 'message_icon' : 'code_icon'}`]} alt="" />
+                  <img src={assets[`${index === 0 ? 'compass_icon' : index === 1 ? 'bulb_icon' : index === 2 ? 'message_icon' :''} `]} alt="" />
                 </div>
               ))}
             </div>

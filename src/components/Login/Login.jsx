@@ -5,12 +5,7 @@ import { login } from "../../services/api";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from '../../context/AuthContext';
 
-const Login = (token) => {
-  const loginTimestamp = new Date().getTime();
-
-  localStorage.setItem('token', token);
-  localStorage.setItem('loginTimestamp', loginTimestamp);
-
+const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -30,24 +25,12 @@ const Login = (token) => {
   e.preventDefault();
   try {
     const response = await login(formData);
-    localStorage.setItem('token', response.data.data);
-    setAuth(response.data.data);
+    const token = response.data.data;
 
-    // Check payment status
-    const lastPaymentDate = localStorage.getItem('lastPaymentDate');
-    const currentDate = new Date();
-    const thirtyDaysInMillis = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+    localStorage.setItem('token', token);
+    setAuth(token);
 
-    if (lastPaymentDate) {
-      const paymentDate = new Date(lastPaymentDate);
-      if (currentDate - paymentDate < thirtyDaysInMillis) {
-        // Skip the payment page if payment was made within the last 30 days
-        navigate('/');
-        return;
-      }
-    }
-
-    // Redirect to payment page if no recent payment
+  
     navigate('/payment');
   } catch (error) {
     alert("Error logging in. Please try again.");

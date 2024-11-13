@@ -1,6 +1,6 @@
 .main{
     flex: 1;
-    min-height: -100vh;
+    min-height: 100vh;
     padding-bottom: 15vh;
     position: relative;
 }
@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: space-between;
     font-size: 22px;
-    padding: 20px;
+    padding: 20px 50px;
     color: #585858;
 }
 .main .nav img{
@@ -190,7 +190,7 @@
 @media (max-width:600px){
     .main-bottom textarea{
         flex: none;
-        width: 150px;
+        height:fit-content;
     }
     .main-bottom img{
         width: 20px;
@@ -208,7 +208,7 @@
         gap: 5px;
     }
     .main .greet{
-        margin: 50px 0px;
+        margin: 0px 0px;
         font-size: 30px;
         color: #c4c7c5;
         font-weight: 500;
@@ -217,9 +217,36 @@
     .main .nav img{
         width: 20px;
         border-radius: 50%;
+        margin-bottom:20px;
     }
     .result img{
         width: 20px;
         border-radius: 50%;
     }
+    .main .card{
+    height: 70px;
+    padding: 15px;
+    background-color: #f0f4f9;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+}
+.main .card img{
+    width: 30px;
+    padding: 5px;
+    position: absolute;
+    background-color: white;
+    border-radius: 20px;
+    bottom: 10px;
+    right: 10px;
+}
+.main{
+    flex: 1;
+    min-height: 50vh;
+    padding-bottom: 15vh;
+    position: relative;
+}
+ .main .nav .logout {
+    margin-bottom: 20px;    
+}
 }
