@@ -64,6 +64,9 @@
     color: #282828;
     cursor: pointer;
   }
+.Sidebar .recent-entry:nth-child(n+5) {
+  display: none;
+}
   
   .Sidebar .recent-entry:hover {
     background-color: #e2e6eb;

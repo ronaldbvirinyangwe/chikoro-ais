@@ -42,6 +42,22 @@
     text-transform: uppercase;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
+.error_msg{
+color:palevioletred;
+}
+.video-section {
+  flex: 1; /* Takes up available space */
+  height: 50%;
+  max-width: 600px; /* Optional: set a max width for the video */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.video-section iframe {
+  width: 100%;
+  height: 50%;
+  border: none;
+}
 
 /* Media Queries for Mobile */
 @media (max-width: 1120px) {

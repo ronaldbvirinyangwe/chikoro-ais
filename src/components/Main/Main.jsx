@@ -63,7 +63,7 @@ const handleInput = (event) => {
       <div className="nav">
         <p>Chikoro AI</p>
         {/* Display user profile picture */}
-        <img src={profilePic || "src/assets/profile.png"} alt="Profile" />
+        <img src={assets.profile} alt="Profile" />
         <LogoutButton className="logout-button"onClick={handleLogout} />
       </div>
       <div className="main-container">
@@ -84,7 +84,7 @@ const handleInput = (event) => {
           </>
           : <div className='result'>
             <div className="result-title">
-              <img src={profilePic || "src/assets/profile.png"} alt="Profile" />
+              <img src={assets.profile} alt="Profile" />
               <p>{recentPrompt}</p>
             </div>
             <div className="result-data">

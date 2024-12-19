@@ -22,20 +22,16 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await login(formData);
-    const token = response.data.data;
-
-    localStorage.setItem('token', token);
-    setAuth(token);
-
-  
-    navigate('/payment');
-  } catch (error) {
-    alert("Error logging in. Please try again.");
-  }
-};
+    e.preventDefault();
+    try {
+      const response = await login(formData);
+      localStorage.setItem('token', response.data.data);
+      setAuth(response.data.data);
+      navigate('/payment');
+    } catch (error) {
+      alert("Error logging in. Please try again.");
+    }
+  };
 
   return (
     <div className="addUser">
@@ -70,9 +66,19 @@ const Login = () => {
         <p>Don't have an Account?</p>
         <Link to="/signup" className="btn btn-success">Sign up</Link>
       </div>
+<div className="video-section">
+        <iframe
+          width="100%"
+          height="100%"
+          src="https://www.youtube.com/embed/dOw5K_J7dRY"  // Replace with your video URL or ID
+          title="Infomercial Video"
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
     </div>
   );
 };
 
 export default Login;
-

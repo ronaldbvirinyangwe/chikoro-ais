@@ -74,16 +74,17 @@
     transition: background-color 0.3s ease;
     margin-left: 0px; 
 }
-.content .video-section {
-  height: 20%;
-  max-width: 600px; 
+.video-section {
+  flex: 1; /* Takes up available space */
+  height: 100%;
+  max-width: 600px; /* Optional: set a max width for the video */
   border-radius: 10px;
   overflow: hidden;
 }
 
-.content .video-section iframe {
-  width: 100%;
-  height: 100%;
+.video-section iframe {
+  width: 20%;
+  height: 20%;
   border: none;
 }
 @media (max-width:600px){

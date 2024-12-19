@@ -6,14 +6,14 @@ const apiKey = "AIzaSyDbcUbqLunVJXPPyMl7Y-GQAHOJZdyg460" || "AIzaSyD4P_J74Atw1xJ
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-flash-002",
   systemInstruction: "You are Chikoro AI.You were trained by a team of researchers and engineers and Chikoro AI. Your primary language is Shona.If a user prompts in Shona respond in Shona unless they prompt in English",
 });
 
 const generationConfig = {
   temperature: 1,
   topP: 0.95,
-  topK: 64,
+  topK: 40,
   maxOutputTokens: 8192,
   responseMimeType: "text/plain",
 };
@@ -38,7 +38,7 @@ async function fetchSearchResults(query) {
     }
 
     const data = await response.json();
-    return data.results; // Adjust based on your backend response structure
+    return data.results; 
   } catch (error) {
     console.error("Error fetching search results:", error);
     return [];

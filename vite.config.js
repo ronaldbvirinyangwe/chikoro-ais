@@ -1,26 +1,19 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import ViteObfuscator from 'vite-plugin-obfuscator';
 
 export default defineConfig({
-  plugins: [
-    react(),
-   // ViteObfuscator({
-     // global: true,
-      //disable: false, // Enable obfuscation even in development
-      //options: {
-        //compact: true,
-       // controlFlowFlattening: true,
-       // stringArrayEncoding: ['base64'],
-       // stringArrayThreshold: 0.75,
-       // transformObjectKeys: true,
-       //renameGlobals: true, 
-     // }
-   //})
-  ],
+  plugins: [react()],
   build: {
-    minify: 'esbuild', // Enable minification
-    sourcemap: false, // Disable source maps
+    minify: 'terser', // Use Terser for stronger minification
+    terserOptions: {
+      compress: {
+        drop_console: true, // Optionally remove console statements
+      },
+      mangle: {
+        toplevel: true, // Mangle top-level variable and function names
+      }
+    },
+    sourcemap: false, // Disable source maps to make reverse engineering harder
   },
   server: {
     proxy: {

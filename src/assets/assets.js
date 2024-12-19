@@ -16,6 +16,7 @@ import gemini_icon from './gemini_icon.png'
 import facebook from './facebook.png'
 import discord from './discord.png'
 import twitter from './twitter.png'
+import profile from './profile.png'
 
 export const assets = {
     history_icon,
@@ -35,5 +36,6 @@ export const assets = {
     gemini_icon,
     facebook,
     twitter,
-    discord
+    discord,
+   profile
 }

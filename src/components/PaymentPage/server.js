@@ -1,11 +1,10 @@
 import express from 'express';
 import { Paynow } from 'paynow';
 import cors from 'cors';
-import jwt from 'jsonwebtoken'; // For token authentication
 
 const app = express();
 const ONE_DAY_MS = 24 * 60 * 60 * 1000; // Milliseconds in a day
-const THIRTY_DAYS_MS = 30 * ONE_DAY_MS; // 30 days in milliseconds
+const THIRTY_DAYS_MS = 150 * ONE_DAY_MS; // 150 days in milliseconds
 
 // CORS configuration
 const corsOptions = {
@@ -25,42 +24,25 @@ const paynow = new Paynow("19208", "1569d49f-67e7-4e3b-9b7c-168c7d37e312");
 paynow.resultUrl = "http://example.com/gateways/paynow/update"; // Should be your backend callback URL
 paynow.returnUrl = "https://www.chikoro-ai.com"; // Ensure this is a full URL
 
-// Secret for JWT (you should use a strong secret in production)
-const JWT_SECRET = 'your-secret-key'; 
 
-// Utility function to authenticate the user using JWT
-const authenticateUser = (token) => {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    return decoded; // Return user data from JWT payload
-  } catch (err) {
-    return null; // Invalid token
-  }
+// Utility function to check if the user token has expired
+const checkTokenValidity = (expirationDate) => {
+  const currentDate = new Date().getTime();
+  return currentDate < expirationDate;
 };
 
 // Endpoint to initiate payment
 app.post('/bhadhara', async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
-    if (!token) {
-      return res.status(401).json({ success: false, error: 'Unauthorized' });
-    }
-
-    const user = authenticateUser(token); // Authenticate the user using JWT
-    if (!user) {
-      return res.status(401).json({ success: false, error: 'Invalid token' });
-    }
-
-    const { phoneNumber } = req.body;
+    const { phoneNumber, token } = req.body;
     if (!phoneNumber) {
       return res.status(400).json({ success: false, error: 'Phone number is required' });
     }
-
     // Create payment with a unique reference
     const payment = paynow.createPayment(`Order-${Date.now()}`, "ronaldbvirinyangwe@icloud.com");
 
     // Add items to the payment (amount in USD)
-    payment.add("Chikoro AI Subscription", 2.00);
+    payment.add("Chikoro AI Subscription", 10.00);
 
     // Send mobile money payment
     const response = await paynow.sendMobile(payment, phoneNumber, 'ecocash');
@@ -126,15 +108,13 @@ app.post('/check-payment-status', async (req, res) => {
     console.log('Payment Status:', status);
 
     if (status.success) {
-      // Set the payment status token with expiration (30 days)
-      const expirationDate = new Date().getTime() + THIRTY_DAYS_MS; // 30 days from now
+      // Set the payment status token with expiration (150 days)
+      const expirationDate = new Date().getTime() + THIRTY_DAYS_MS; // 150 days from now
       const paymentToken = {
         status: 'paid',
         expirationDate,
       };
 
-      // Store payment status in token (simulated in localStorage or database in production)
-      // In a real app, you'd store this in your database
       res.status(200).json({
         success: true,
         message: 'Payment completed successfully',
@@ -153,29 +133,6 @@ app.post('/check-payment-status', async (req, res) => {
   }
 });
 
-// Endpoint to login (generate JWT token)
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  // Example: Authenticate user (in a real app, you'd check the DB)
-  if (email === 'user@example.com' && password === 'password') {
-    const user = { id: 1, email }; // User data to include in the token
-    const token = jwt.sign(user, JWT_SECRET, { expiresIn: '1h' }); // Create JWT token (expires in 1 hour)
-
-    return res.status(200).json({
-      success: true,
-      token,
-    });
-  }
-
-  return res.status(401).json({ success: false, error: 'Invalid credentials' });
-});
-
-// Endpoint to log out
-app.post('/logout', (req, res) => {
-  // In a real-world scenario, you'd invalidate the JWT token here
-  res.status(200).json({ success: true, message: 'Logged out successfully' });
-});
 
 app.listen(3080, () => {
   console.log('Server listening on port 3080');
